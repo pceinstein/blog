@@ -4,6 +4,12 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
+# gerenciador personalizado
+class PublishedManager(models.Manager):
+    def get_queryset(self):
+        return super(PublishedManager, self).get_queryset().filter(status='published')
+
+
 class Post(models.Model):
     STATUS_CHOICES = (
         ('draft', 'Draft'),
@@ -34,4 +40,7 @@ class Post(models.Model):
     
     def __str__(self):
         return self.title
+    
+    objects = models.Manager()      # o gerenciador default
+    published = PublishedManager()  # o nosso gerenciador personalizado
     
