@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -122,3 +123,16 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# Testar o envio de e-mails sem a presença se um servidor SMTP
+# solicita ao Django que escreva os e-mails no console (shell)
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# configurar o servidor de e-mail do Gmail
+# importante utilizar variável de ambiente para não expor dados sensíveis
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = os.environ['gmail_account']
+EMAIL_HOST_PASSWORD = os.environ['gmail_password']
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
