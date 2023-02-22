@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
+from taggit.managers import TaggableManager # taggit (aplicação de terceiros)
 
 # Create your models here.
 
@@ -44,6 +45,7 @@ class Post(models.Model):
     
     objects = models.Manager()      # o gerenciador default
     published = PublishedManager()  # o nosso gerenciador personalizado
+    tags = TaggableManager()        # o gerenciador de marcação de tag taggit
 
     # devolve o URL canônico (preferencial) para o post.
     # será utilizado para fazer a ligação com postagens específicas
