@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Post
+from .models import Post, Comment
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView
-from .forms import EmailPostForm
+from .forms import EmailPostForm, CommentForm
 from django.core.mail import send_mail
 import os
 
@@ -17,6 +17,7 @@ class PostListView(ListView):
 
 
 # obter todas as postagens cujo status seja published
+# substituída por PostListView a cima
 def post_list(request):
     object_list = Post.published.all()
     paginator = Paginator(object_list, 3)   # 3 postagens em cada página
@@ -45,9 +46,32 @@ def post_detail(request, year, month, day, post):
             publish__month=month,
             publish__day=day)
     
+    # Lista dos comentários ativos para esta postagem
+    comments = post.comments.filter(active=True)
+
+    new_comment = None
+
+    if request.method == 'POST':
+        # Um comentário foi postado
+        comment_form = CommentForm(data=request.POST)
+        if comment_form.is_valid():
+            # Cria o objeto Comment, mas não
+            # o salva ainda no banco de dados
+            new_comment = comment_form.save(commit=False)
+            # Atribui a postagem atual ao comentário
+            new_comment.post = post
+            # Salva o comentário no banco de dados
+            new_comment.save()
+
+    else:   # GET request
+        comment_form = CommentForm()
+    
     return render(request,
         'blog/post/detail.html',
-        {'post':post})
+        {'post':post,
+         'comments':comments,
+         'new_comment':new_comment,
+         'comment_form':comment_form})
 
 
 # compartilhamento de postagens com e-mail
